@@ -34,22 +34,21 @@ class Board:
 
     # move is a human move
     def update(self, move): 
-        start_i,start_j=3-(ord(move[0])-ord("a")), int(move[1]) - 1
-        end_i,end_j=3-(ord(move[2])-ord("a")),int(move[3])-1
-        self.modify_str_state(self.n*end_i + end_j, self.str_state[4*start_i + start_j])
-        self.modify_str_state(self.n*start_i + start_j, "e")
+        start_i, start_j = self.n - int(move[1]), ord(move[0]) - ord("a")
+        end_i, end_j = self.n - int(move[3]), ord(move[2]) - ord("a")
+        self.modify_str_state(self.ij_to_idx(end_i, end_j), self.str_state[self.ij_to_idx(start_i, start_j)])
+        self.modify_str_state(self.ij_to_idx(start_i, start_j), "e")
 
     # move is a computer move
     def humanify(self, move):
         ij_start = self.idx_to_ij(move[0])
         ij_end = self.idx_to_ij(move[1])
-        human_ij_start = chr(ord('a')+3-ij_start[0]) + str(1 + ij_start[1])
-        human_ij_end = chr(ord('a')+3-ij_end[0]) + str(1 + ij_end[1])
+        human_ij_start = chr(ord('a') + ij_start[1]) + str(4 - ij_start[0])
+        human_ij_end = chr(ord('a') + ij_end[1]) + str(4 - ij_end[0])
         return human_ij_start + human_ij_end
 
     def notGameOver(self):
-        return True
-
+        return True 
     def get_piece_color(self, piece):
         if piece.islower(): 
             return "white"
@@ -141,3 +140,4 @@ class Board:
                     score -= 999
 
         return score
+
