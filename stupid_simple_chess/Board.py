@@ -1,4 +1,9 @@
 
+# Notes about conventions:
+# black is caps
+# white is lower
+
+
 class Board:
     def __init__(self):
         self.n = 4
@@ -24,11 +29,30 @@ class Board:
     def update(self, move): #move
         start_i,start_j=3-(ord(move[0])-ord("a")), int(move[1]) - 1
         end_i,end_j=3-(ord(move[2])-ord("a")),int(move[3])-1
-        self.modify_str_state(4*end_i + end_j, self.str_state[4*start_i + start_j])
-        self.modify_str_state(4*start_i + start_j, "e")
+        self.modify_str_state(self.n*end_i + end_j, self.str_state[4*start_i + start_j])
+        self.modify_str_state(self.n*start_i + start_j, "e")
 
     def notGameOver(self):
         return True
+
+    def get_piece_color(self, piece):
+        if piece.islower(): 
+            return "white"
+        else:
+            return "black"
+
+    def possible_actions(self, color):
+        for i in range(self.n):
+            for j in range(self.n):
+                if self.get_piece(i, j):
+        
+
+
+    def get_best_action(self, depth_left=10):
+        for action in self.possible_actions():
+                
+            
+
 
 
     def ij_to_idx(self, i, j):
@@ -67,4 +91,3 @@ class Board:
                 possible_moves.append(self.ij_to_idx(i+1, j+1))
 
         return possible_moves
-                
