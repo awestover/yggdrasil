@@ -17,7 +17,7 @@ def play_computer():
         board.update(move)
 
         print("Computer turn: \n\n")
-        board.computer_action()
+        board.update(board.humanify(board.computer_action))
 
     pass
 

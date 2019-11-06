@@ -26,7 +26,7 @@ class Board:
     def modify_str_state(self, i, new_val):
         self.str_state = self.str_state[:i] + new_val + self.str_state[i+1:]
        
-    def update(self, move): #move
+    def update(self, move): # move
         start_i,start_j=3-(ord(move[0])-ord("a")), int(move[1]) - 1
         end_i,end_j=3-(ord(move[2])-ord("a")),int(move[3])-1
         self.modify_str_state(self.n*end_i + end_j, self.str_state[4*start_i + start_j])
@@ -41,18 +41,26 @@ class Board:
         else:
             return "black"
 
+    # returns [(start_idx, end_idx)]
     def possible_actions(self, color):
+        all_possible_moves = []
         for i in range(self.n):
             for j in range(self.n):
-                if self.get_piece(i, j):
-        
+                if self.color(self.get_piece(i, j)) == color:
+                    all_possible_move += self.piece_possible_action(i, j)
+        return all_possible_move
 
-
-    def get_best_action(self, depth_left=10):
-        for action in self.possible_actions():
-                
-            
-
+    def get_best_action(self, color, depth_left=3):
+        best_reward = -9999999999999999999 # - inf
+        best_action = (0,0)
+        for action in self.possible_actions(color):
+            tmp_board_state = self.test_perform_move(action)
+            # 
+            action_reward = self.board_score(tmp_board_state, color)
+            if action_reward > best_reward:
+                best_reward = action_reward
+                best_action = action
+        return best_action
 
 
     def ij_to_idx(self, i, j):
@@ -61,7 +69,7 @@ class Board:
     def get_piece(self, i, j):
         return self.str_state[self.ij_to_idx(i, j)]
 
-    # returns (start_idx, end_idx)
+    # returns [(start_idx, end_idx), ...]
     def piece_possible_action(self, i, j):
         piece = self.get_piece(i, j)
         possible_moves = []
@@ -91,3 +99,5 @@ class Board:
                 possible_moves.append(self.ij_to_idx(i+1, j+1))
 
         return possible_moves
+
+
