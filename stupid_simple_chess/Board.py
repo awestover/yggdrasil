@@ -67,3 +67,4 @@ class Board:
                 possible_moves.append(self.ij_to_idx(i+1, j+1))
 
         return possible_moves
+                
