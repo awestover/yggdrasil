@@ -3,9 +3,9 @@ from Board import Board
 
 def play_computer():
     board = Board()
+    board.show()
 
     while board.notGameOver():
-        board.show()
         print("Player turn: \n\n")
 
         validMove = False
@@ -13,11 +13,12 @@ def play_computer():
             move = input("Input a move: \n")
             if board.is_valid_move(move):
                 validMove = True
-        
         board.update(move)
+        board.show()
 
         print("Computer turn: \n\n")
-        board.update(board.humanify(board.computer_action))
+        board.update(board.humanify(board.get_best_action("black")))
+        board.show()
 
     pass
 

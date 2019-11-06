@@ -8,7 +8,6 @@ class Board:
     def __init__(self):
         self.n = 4
         self.str_state = "NKeNPPPPppppnekn"
-       
 
     def show(self):
         pictures = {"k": "♚", "K": "♔", "n": "♞",
@@ -62,16 +61,16 @@ class Board:
         all_possible_moves = []
         for i in range(self.n):
             for j in range(self.n):
-                if self.color(self.get_piece(i, j)) == color:
-                    all_possible_move += self.piece_possible_action(i, j)
-        return all_possible_move
+                __import__('ipdb').set_trace()
+                if self.get_piece_color(self.get_piece(i, j, self.str_state)) == color:
+                    all_possible_moves += self.piece_possible_action(i, j, self.str_state)
+        return all_possible_moves
 
     def get_best_action(self, color, depth_left=3):
         best_reward = -9999999999999999999 # - inf
         best_action = (0,0)
         for action in self.possible_actions(color):
             tmp_board_state = self.test_perform_move(action)
-            # 
             action_reward = self.board_score(tmp_board_state, color)
             if action_reward > best_reward:
                 best_reward = action_reward
@@ -84,11 +83,11 @@ class Board:
     def idx_to_ij(self, idx):
         return divmod(idx, self.n)
 
-    def get_piece(self, i, j, board_state=self.str_state):
+    def get_piece(self, i, j, board_state):
         return board_state[self.ij_to_idx(i, j)]
 
-    # returns (start_idx, end_idx)
-    def piece_possible_action(self, i, j, board_state=self.str_state):
+    # returns [(start_idx, end_idx), ...]
+    def piece_possible_action(self, i, j, board_state):
         piece = self.get_piece(i, j, board_state)
         possible_moves = []
         
@@ -96,25 +95,25 @@ class Board:
             for i_new in (-1,0,1):
                 for j_new in (-1,0,1):
                     if 0 <= i_new < self.n and 0 <= j_new < self.n:
-                        possible_moves.append(self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new))
+                        possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
         elif piece.lower() == "n":
             for i_new in (-2,-1,1,2):
                 for j_new in (3-abs(i_new), abs(i_new)-3):
                     if 0 <= i_new < self.n and 0 <= j_new < self.n:
-                        possible_moves.append(self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new))
+                        possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
         elif piece == "p":
             if i != 0:
-                possible_moves.append(i-1, j)
-            if self.get_piece(i-1, j-1) != "e":
-                possible_moves.append(self.ij_to_idx(i, j), self.ij_to_idx(i-1, j-1))
+                possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j)))
+            if self.get_piece(i-1, j-1, self.str_state) != "e":
+                possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j-1)))
 
         elif piece == "P":
             if i != self.n:
-                possible_moves.append(i+1, j)
-            if self.get_piece(i+1, j+1) != "e":
-                possible_moves.append(self.ij_to_idx(i, j), self.ij_to_idx(i+1, j+1))
+                possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1,j)))
+            if self.get_piece(i+1, j+1, self.str_state) != "e":
+                possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j+1)))
 
         non_suicidal_possible_moves = []
         for move in possible_moves:
