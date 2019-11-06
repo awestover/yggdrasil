@@ -27,9 +27,8 @@ class Board:
         self.str_state = self.str_state[:i] + new_val + self.str_state[i+1:]
     
     def test_perform_move(self, move):
-        new_state = self.str_state
-        new_state = new_state[:move[1]] + self.str_state[move[0]] + self.str_state[move[1]+1:]
-        new_state = new_state[:move[0]] + "e" + self.str_state[move[0]+1:]
+        new_state = self.str_state[:move[1]] + self.str_state[move[0]] + self.str_state[move[1]+1:]
+        new_state = new_state[:move[0]] + "e" + new_state[move[0]+1:]
         return new_state
 
     # move is a human move
@@ -90,14 +89,18 @@ class Board:
         possible_moves = []
         
         if piece.lower() == "k":    
-            for i_new in (-1,0,1):
-                for j_new in (-1,0,1):
+            for i_delta in (-1,0,1):
+                i_new = i + i_delta
+                for j_delta in (-1,0,1):
+                    j_new = j_delta
                     if 0 <= i_new < self.n and 0 <= j_new < self.n:
                         possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
         elif piece.lower() == "n":
-            for i_new in (-2,-1,1,2):
-                for j_new in (3-abs(i_new), abs(i_new)-3):
+            for i_delta in (-2,-1,1,2):
+                i_new = i + i_delta
+                for j_delta in (3-abs(i_delta), abs(i_delta)-3):
+                    j_new = j + j_delta
                     if 0 <= i_new < self.n and 0 <= j_new < self.n:
                         possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
