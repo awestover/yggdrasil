@@ -47,15 +47,23 @@ class Board:
                 for j_new in (-1,0,1):
                     if 0 <= i_new < self.n and 0 <= j_new < self.n:
                         possible_moves.append(self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new))
+
         elif piece.lower() == "n":
             for i_new in (-2,-1,1,2):
                 for j_new in (3-abs(i_new), abs(i_new)-3):
                     if 0 <= i_new < self.n and 0 <= j_new < self.n:
                         possible_moves.append(self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new))
+
         elif piece == "p":
-            
+            if i != 0:
+                possible_moves.append(i-1, j)
+            if self.get_piece(i-1, j-1) != "e":
+                possible_moves.append(self.ij_to_idx(i-1, j-1))
+
         elif piece == "P":
-
-
+            if i != self.n:
+                possible_moves.append(i+1, j)
+            if self.get_piece(i+1, j+1) != "e":
+                possible_moves.append(self.ij_to_idx(i+1, j+1))
 
         return possible_moves
