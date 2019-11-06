@@ -104,14 +104,18 @@ class Board:
         elif piece == "p":
             if i != 0 and self.get_piece(i-1,j,self.str_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j)))
-            if self.get_piece(i-1, j-1, self.str_state) == "e":
+            if i != 0 and j != 0 and self.get_piece(i-1, j-1, self.str_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j-1)))
+            if i != 0 and j != self.n-1 and self.get_piece(i-1, j+1, self.str_state) != "e":
+                possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j+1)))
 
         elif piece == "P":
-            if i != self.n and self.get_piece(i+1, j, self.str_state) == "e":
+            if i != self.n-1 and self.get_piece(i+1, j, self.str_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1,j)))
-            if self.get_piece(i+1, j+1, self.str_state) == "e":
+            if i != self.n-1 and j != self.n-1 and self.get_piece(i+1, j+1, self.str_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j+1)))
+            if i != self.n-1 and j != 0 and self.get_piece(i+1, j-1, self.str_state) != "e":
+                possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j-1)))
 
         non_suicidal_possible_moves = []
         for move in possible_moves:
