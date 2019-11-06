@@ -61,7 +61,6 @@ class Board:
         all_possible_moves = []
         for i in range(self.n):
             for j in range(self.n):
-                __import__('ipdb').set_trace()
                 if self.get_piece_color(self.get_piece(i, j, self.str_state)) == color:
                     all_possible_moves += self.piece_possible_action(i, j, self.str_state)
         return all_possible_moves
@@ -104,20 +103,20 @@ class Board:
                         possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
         elif piece == "p":
-            if i != 0:
+            if i != 0 and self.get_piece(i-1,j,self.str_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j)))
-            if self.get_piece(i-1, j-1, self.str_state) != "e":
+            if self.get_piece(i-1, j-1, self.str_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j-1)))
 
         elif piece == "P":
-            if i != self.n:
+            if i != self.n and self.get_piece(i+1, j, self.str_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1,j)))
-            if self.get_piece(i+1, j+1, self.str_state) != "e":
+            if self.get_piece(i+1, j+1, self.str_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j+1)))
 
         non_suicidal_possible_moves = []
         for move in possible_moves:
-            if self.get_piece_color(piece) == self.get_piece_color(board_state[move[1]]):
+            if self.get_piece_color(piece) != self.get_piece_color(board_state[move[1]]):
                 non_suicidal_possible_moves.append(move)
 
         return non_suicidal_possible_moves
