@@ -5,19 +5,46 @@
 		<meta name="viewport" content="width=device-width" />
 		<title>Index</title>
 		<script src="{{ url_for('static', filename='jquery-3.4.1.min.js') }}" charset="utf-8"></script>
-	</head>
+		<style>
+		body {
+			background-image: url("{{ url_for('static', filename='yggdrasilPic.jpg') }}");
+			background-repeat: no-repeat;
+			background-attachment: fixed;
+			background-size: 100% 100%;
+		}
+		#canvas-div {
+			width: 400px;
+			height: 400px;
+			margin: 20vh auto;
+		}
+		h1 {
+			color: red;
+		}
+
+		button {
+			padding: 2%;
+			font-size: 20px;
+		}
+
+		input {
+			padding: 2%;
+			font-size: 20px;
+		}
+	</style>
+
 	<body>
-		<h1>CHESS </h1>
+
 		<input type="text" value="a1b2" name="" id="move"/>
-		<script charset="utf-8">
-			function sendMove(){
-					$.post('/sendMove', {"move": $("#move").val()}, function(data){
-						alert('wait I gotta callback?');
-						console.log(data);
-					});
-			}
-		</script>
 		<button onclick="sendMove()">Submit move</button>
-		<img src="{{ url_for('static', filename='yggdrasilPic.jpg') }}" alt=""/>
+		<div style="position:fixed; height: 400px; overflow: scroll; background-color: #03f0fc">
+			<h3>Move log:</h3>
+			<ul id="move-log">
+			</ul>
+		</div>
+
+		<div id="canvas-div">
+		<canvas height=400px width=400px id="myCanvas"> </canvas>
+		</div>
+		<script src="{{ url_for('static', filename='index.js') }}" charset="utf-8"></script>
 	</body>
 </html>

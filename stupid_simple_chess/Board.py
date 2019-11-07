@@ -5,9 +5,9 @@
 
 
 class Board:
-    def __init__(self):
+    def __init__(self, init_state="NKeNPPPPppppnekn"):
         self.n = 4
-        self.str_state = "NKeNPPPPppppnekn"
+        self.str_state = init_state
 
     def show(self):
         pictures = {"k": "♚", "K": "♔", "n": "♞",
