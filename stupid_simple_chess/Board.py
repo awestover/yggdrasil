@@ -54,25 +54,42 @@ class Board:
         else:
             return "black"
 
+    def invert_color(self, color):
+        if color == "white":
+            return "black"
+        elif color == "black":
+            return "white"
+
     # returns [(start_idx, end_idx)]
-    def possible_actions(self, color):
+    def possible_actions(self, board_state, color):
         all_possible_moves = []
         for i in range(self.n):
             for j in range(self.n):
-                if self.get_piece_color(self.get_piece(i, j, self.str_state)) == color:
-                    all_possible_moves += self.piece_possible_action(i, j, self.str_state)
+                if self.get_piece_color(self.get_piece(i, j, board_state)) == color:
+                    all_possible_moves += self.piece_possible_action(i, j, board_state)
         return all_possible_moves
 
-    def get_best_action(self, color, depth_left=3):
-        best_reward = -9999999999999999999 # - inf
+    # this is the top layer of recursion
+    # returns action 
+    def get_best_action(self, color, max_depth=1):
+        action, value = self.recursively_search_actions(self.str_state, color, max_depth)
+        return action
+
+    # this is the recursive call, it returns action, value
+    def recursively_search_actions(self, board_state, color, depth_left):
+        best_value = -9999999999999999999 # - inf
         best_action = (0,0)
-        for action in self.possible_actions(color):
+        for action in self.possible_actions(board_state, color):
             tmp_board_state = self.test_perform_move(action)
-            action_reward = self.board_score(tmp_board_state, color)
-            if action_reward > best_reward:
-                best_reward = action_reward
+            if depth_left == 0:
+                action_value = self.board_score(tmp_board_state, color)
+            else:
+                opponent_action, action_value = self.recursively_search_actions(tmp_board_state, self.invert_color(color), depth_left-1)
+
+            if action_value > best_value:
+                best_value = action_value
                 best_action = action
-        return best_action
+        return best_action, best_value
 
     def ij_to_idx(self, i, j):
         return i*self.n+j
