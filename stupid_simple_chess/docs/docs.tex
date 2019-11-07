@@ -1,0 +1,136 @@
+\documentclass{article}[11pt]
+\usepackage[subtle]{savetrees}
+\usepackage[left=1in, right=1in, top=1in, bottom=1in]{geometry}
+
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{mathtools}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{Alek Westover}
+\rhead{}
+\usepackage{hyperref}
+
+\DeclareMathOperator{\E}{\mathbb{E}}
+\DeclareMathOperator{\Var}{\text{Var}}
+\DeclareMathOperator{\img}{Im}
+\DeclareMathOperator{\polylog}{\text{polylog}}
+\DeclareMathOperator{\st}{\text{ such that }}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\interior}[1]{%
+  {\kern0pt#1}^{\mathrm{o}}%
+}
+
+%** VECTOR NOTATION
+\newcommand{\mb}{\mathbf}
+\newcommand{\x}{\mathbf{x}}
+\newcommand{\y}{\mathbf{y}}
+\newcommand{\z}{\mathbf{z}}
+\newcommand{\f}{\mathbf{f}}
+\newcommand{\n}{\mathbf{n}}
+\newcommand{\p}{\mathbf{p}}
+\renewcommand{\k}{\mathbf{k}}
+\renewcommand{\d}{\mathrm{d}} %straight d for integrals
+\newcommand{\De}{\Delta}
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+\newcommand{\ran}{\mathrm{ran}}
+
+%** SETS
+\newcommand{\set}[1]{\mathbb{#1}}
+\newcommand{\curly}[1]{\mathcal{#1}}
+\newcommand{\goth}[1]{\mathfrak{#1}}
+\newcommand{\setof}[2]{\left\{ #1\; : \;#2 \right\}}
+\newcommand{\cc}{\subseteq\subseteq}
+\newcommand{\R}{\set{R}}
+\newcommand{\C}{\set{C}}
+\newcommand{\Z}{\set{Z}}
+\newcommand{\D}{\curly{D}}
+\renewcommand{\S}{\set{S}}
+\newcommand{\T}{\set{T}}
+
+
+\newcommand{\contr}[0]{\[ \Rightarrow\!\Leftarrow \]}
+\newcommand{\defeq}{\vcentcolon=}
+\newcommand{\eqdef}{=\vcentcolon}
+
+\newtheorem{fact}{Fact}
+\newtheorem{definition}{Definition}
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{theorem}{Theorem}
+
+\usepackage{mdframed}
+\newmdtheoremenv{q}{Question}
+
+\DeclareMathOperator{\ord}{\textbf{ord}}
+\DeclareMathOperator{\chr}{\textbf{chr}}
+\DeclareMathOperator{\str}{\textbf{str}}
+\DeclareMathOperator{\into}{\textbf{int}}
+\DeclareMathOperator{\divmod}{\textbf{divmod}}
+
+\usepackage{tikz-cd}
+
+\begin{document}
+\begin{center}
+	\textbf{Documentation:}
+\end{center}
+
+There are many different methods that we use to specify a location on the
+board.  They are all often convenient for different reasons. The three ways of
+representing a location on the board are:
+
+\begin{itemize}
+	\item \emph{human	readable:} e.g. a1. This is the normal chess lingo. It is used for I/O.
+	\item \emph{2d grid}: e.g. (1,1). This is useful for specifying moves.
+	\item \emph{flattened grid}: e.g. 4. The board is stored as a string. this is kind of
+		nice, but maybe was a bad idea. Think of it as an imutable 1d array though
+		(because that's what it is).
+\end{itemize} 
+
+\vspace{1cm}
+The transformations between states are depicted in the following diagram:
+\vspace{0.25cm}
+$$
+\begin{tikzcd}
+	\text{Human Readable} \quad \arrow[r, yshift=-3ex, "update"] 
+	&\quad \text{2d grid}\quad \arrow[l, yshift=3ex, "humanify"] \arrow[r, yshift=-3ex, "ij\_to\_idx"] 
+	&\quad \text{1d grid} \arrow[l, yshift=3ex, "idx\_to\_ij"]
+\end{tikzcd}
+$$
+\vspace{1cm}
+$ $\\
+Here is an outline of the important functions:\\
+\textbf{humanifty:}
+$$(i,j) \quad\mapsto\quad \chr(\ord(\text{`a'})+j) + \str(4-i)$$
+\textbf{update:}
+(note that this function is ``in-place'')
+$$h_0h_1 \quad \mapsto \quad (4-\into(h_1), \ord(h_0) - \ord(\text{`a'}))$$
+\textbf{ij\_to\_idx:}
+$$(i,j) \quad \mapsto \quad 4i+j$$
+\textbf{idx\_to\_ij:}
+$$\text{idx} \quad \mapsto \quad \divmod(\text{idx})$$
+
+\vspace{1cm}
+$ $\\
+Here is what the grid looks like:
+\begin{table}[h]
+\centering
+\begin{tabular}{lllll}
+\cline{2-5}
+\multicolumn{1}{l|}{4} & \multicolumn{1}{l|}{(0,0)=0}  & \multicolumn{1}{l|}{(0,1)=1}  & \multicolumn{1}{l|}{(0,2)=2}  & \multicolumn{1}{l|}{(0,3)=3}  \\ \cline{2-5} 
+\multicolumn{1}{l|}{3} & \multicolumn{1}{l|}{(1,0)=4}  & \multicolumn{1}{l|}{(1,1)=5}  & \multicolumn{1}{l|}{(1,2)=6}  & \multicolumn{1}{l|}{(1,3)=7}  \\ \cline{2-5} 
+\multicolumn{1}{l|}{2} & \multicolumn{1}{l|}{(2,0)=8}  & \multicolumn{1}{l|}{(2,1)=9}  & \multicolumn{1}{l|}{(2,2)=10} & \multicolumn{1}{l|}{(2,3)=11} \\ \cline{2-5} 
+\multicolumn{1}{l|}{1} & \multicolumn{1}{l|}{(3,0)=12} & \multicolumn{1}{l|}{(3,1)=13} & \multicolumn{1}{l|}{(3,2)=14} & \multicolumn{1}{l|}{(3,3)=15} \\ \cline{2-5} 
+                       & a                             & b                             & c                             & d                            
+\end{tabular}
+\end{table}
+% https://www.tablesgenerator.com/latex_tables#
+
+
+\end{document}
+
