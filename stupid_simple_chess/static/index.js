@@ -1,5 +1,7 @@
 
-let board = "NKeNPPPPppppnekn";
+let board = "NKeNePPPPPeeeeepppppnekne";
+let n = parseInt(Math.sqrt(board.length));
+let piece_size = 100;
 
 let imgs = {
 	"K": new Image(),
@@ -25,23 +27,30 @@ function sendMove(){
 		function(data){
 			let rdata = JSON.parse(data);
 			board = rdata["board"];
-			updateBoard();
+			updateBoard([rdata["move_ij"]]);
 			updateMoveLog("computer", rdata["move"]);
+			console.log(rdata["move_ij"]);
 		}
 	);
 }
 
-function updateBoard(){
+function updateBoard(highlight_squares){
 	let c = document.getElementById("myCanvas");
 	let ctx = c.getContext("2d");
 
-	let piece_size = 100;
-
-	for (let i = 0; i < 4; i++){
-		for (let j = 0; j < 4; j++){
-			let idx = 4*i+j;
+	for (let i = 0; i < n; i++){
+		for (let j = 0; j < n; j++){
+			let idx = n*i+j;
 			ctx.drawImage(imgs[board[idx]], j*piece_size, i*piece_size, piece_size, piece_size);
 		}
+	}
+
+	for (let i in highlight_squares){
+		ctx.beginPath();
+		ctx.lineWidth = "6";
+		ctx.strokeStyle = "red";
+		ctx.rect(highlight_squares[i][1]*piece_size, highlight_squares[i][0]*piece_size, piece_size, piece_size);
+		ctx.stroke();
 	}
 }
 
@@ -50,5 +59,5 @@ function updateMoveLog(player, move){
 	moveLog.prepend("<li>"+ player + ": " + move+"</li>");
 }
 
-setTimeout(function(){updateBoard()}, 1000);
+setTimeout(function(){updateBoard([])}, 1000);
 

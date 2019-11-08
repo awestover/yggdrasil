@@ -5,8 +5,8 @@
 
 
 class Board:
-    def __init__(self, init_state="NKeNPPPPppppnekn"):
-        self.n = 4
+    def __init__(self, init_state="NKeNPPPPPpppppnekn"):
+        self.n = int(len(init_state)**0.5)
         self.str_state = init_state
 
     def show(self):
@@ -33,17 +33,22 @@ class Board:
 
     # move is a human move
     def update(self, move): 
+        start_idx, end_idx = self.human_move_to_idxs(move)
+        self.modify_str_state(end_idx, self.str_state[start_idx])
+        self.modify_str_state(start_idx, "e")
+
+    def human_move_to_idxs(self, move):
         start_i, start_j = self.n - int(move[1]), ord(move[0]) - ord("a")
         end_i, end_j = self.n - int(move[3]), ord(move[2]) - ord("a")
-        self.modify_str_state(self.ij_to_idx(end_i, end_j), self.str_state[self.ij_to_idx(start_i, start_j)])
-        self.modify_str_state(self.ij_to_idx(start_i, start_j), "e")
+        return self.ij_to_idx(start_i, start_j), self.ij_to_idx(end_i, end_j)
+        
 
     # move is a computer move
     def humanify(self, move):
         ij_start = self.idx_to_ij(move[0])
         ij_end = self.idx_to_ij(move[1])
-        human_ij_start = chr(ord('a') + ij_start[1]) + str(4 - ij_start[0])
-        human_ij_end = chr(ord('a') + ij_end[1]) + str(4 - ij_end[0])
+        human_ij_start = chr(ord('a') + ij_start[1]) + str(self.n - ij_start[0])
+        human_ij_end = chr(ord('a') + ij_end[1]) + str(self.n - ij_end[0])
         return human_ij_start + human_ij_end
 
     def notGameOver(self):
@@ -71,7 +76,7 @@ class Board:
 
     # this is the top layer of recursion
     # returns action 
-    def get_best_action(self, color, max_depth=1):
+    def get_best_action(self, color, max_depth=5):
         action, value = self.recursively_search_actions(self.str_state, color, max_depth)
         return action
 
