@@ -5,36 +5,50 @@
 
 
 class Board:
-    def __init__(self, init_state="NKeNPPPPPpppppnekn"):
+    def __init__(self, init_state="NeKeNPPPPPeeeeepppppneken"):
+    # def __init__(self, init_state="ePeeeepee"):
         self.n = int(len(init_state)**0.5)
-        self.str_state = init_state
+        self.state = init_state
 
     def show(self):
-        pictures = {"k": "♚", "K": "♔", "n": "♞",
-                    "N": "♘", "p": "♟", "P": "♙", "e": " "}
-        uni_str = self.str_state
+        print(self)
+
+    def to_unicode(self, board_state):
+        pictures = {
+            "k": "♔", "K": "♚", 
+            "n": "♘", "N": "♞", 
+            "p": "♙", "P": "♟", 
+            "e": " "
+        }
+        unicode_str = board_state
         for key in pictures:
-            uni_str = uni_str.replace(key, pictures[key])
+            unicode_str = unicode_str.replace(key, pictures[key])
+        space_str = ""
         for i in range(self.n):
             for j in range(self.n*i, self.n*(i+1)):
-                print(uni_str[j]+" ", end="")
-            print()
+                space_str += unicode_str[j]+" "
+            if i < self.n - 1:
+                space_str += "\n"
+        return space_str 
+
+    def __str__(self):
+        return self.to_unicode(self.state)
            
     def is_valid_move(self, move):
         return True #not actually
    
     def modify_str_state(self, i, new_val):
-        self.str_state = self.str_state[:i] + new_val + self.str_state[i+1:]
+        self.state = self.state[:i] + new_val + self.state[i+1:]
     
-    def test_perform_move(self, move):
-        new_state = self.str_state[:move[1]] + self.str_state[move[0]] + self.str_state[move[1]+1:]
+    def test_perform_move(self, board_state, move):
+        new_state = board_state[:move[1]] + board_state[move[0]] + board_state[move[1]+1:]
         new_state = new_state[:move[0]] + "e" + new_state[move[0]+1:]
         return new_state
 
     # move is a human move
     def update(self, move): 
         start_idx, end_idx = self.human_move_to_idxs(move)
-        self.modify_str_state(end_idx, self.str_state[start_idx])
+        self.modify_str_state(end_idx, self.state[start_idx])
         self.modify_str_state(start_idx, "e")
 
     def human_move_to_idxs(self, move):
@@ -53,8 +67,11 @@ class Board:
 
     def notGameOver(self):
         return True 
+
     def get_piece_color(self, piece):
-        if piece.islower(): 
+        if piece == "e":
+            return "e"
+        elif piece.islower(): 
             return "white"
         else:
             return "black"
@@ -76,24 +93,30 @@ class Board:
 
     # this is the top layer of recursion
     # returns action 
-    def get_best_action(self, color, max_depth=5):
-        action, value = self.recursively_search_actions(self.str_state, color, max_depth)
+    def get_best_action(self, color, max_depth=4):
+        action, value = self.recursively_search_actions(self.state, color, max_depth)
         return action
 
     # this is the recursive call, it returns action, value
     def recursively_search_actions(self, board_state, color, depth_left):
-        best_value = -9999999999999999999 # - inf
+        best_value = float("-inf") 
         best_action = (0,0)
         for action in self.possible_actions(board_state, color):
-            tmp_board_state = self.test_perform_move(action)
+            tmp_board_state = self.test_perform_move(board_state, action)
             if depth_left == 0:
                 action_value = self.board_score(tmp_board_state, color)
+                #print(action_value)
             else:
-                opponent_action, action_value = self.recursively_search_actions(tmp_board_state, self.invert_color(color), depth_left-1)
+                opponent_action, opponent_action_value = self.recursively_search_actions(tmp_board_state, self.invert_color(color), depth_left-1)
+                action_value = -opponent_action_value
 
             if action_value > best_value:
                 best_value = action_value
                 best_action = action
+
+        #print((5-depth_left)* "**" + "  " + str(best_value))
+        if best_value == float("-inf"):
+            __import__('ipdb').set_trace()
         return best_action, best_value
 
     def ij_to_idx(self, i, j):
@@ -114,9 +137,10 @@ class Board:
             for i_delta in (-1,0,1):
                 i_new = i + i_delta
                 for j_delta in (-1,0,1):
-                    j_new = j_delta
-                    if 0 <= i_new < self.n and 0 <= j_new < self.n:
-                        possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
+                    j_new = j + j_delta
+                    if i_delta != 0 or j_delta != 0:
+                        if 0 <= i_new < self.n and 0 <= j_new < self.n:
+                            possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
         elif piece.lower() == "n":
             for i_delta in (-2,-1,1,2):
@@ -127,19 +151,19 @@ class Board:
                         possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i_new, j_new)))
 
         elif piece == "p":
-            if i != 0 and self.get_piece(i-1,j,self.str_state) == "e":
+            if i != 0 and self.get_piece(i-1,j,board_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j)))
-            if i != 0 and j != 0 and self.get_piece(i-1, j-1, self.str_state) != "e":
+            if i != 0 and j != 0 and self.get_piece(i-1, j-1, board_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j-1)))
-            if i != 0 and j != self.n-1 and self.get_piece(i-1, j+1, self.str_state) != "e":
+            if i != 0 and j != self.n-1 and self.get_piece(i-1, j+1, board_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-1, j+1)))
 
         elif piece == "P":
-            if i != self.n-1 and self.get_piece(i+1, j, self.str_state) == "e":
+            if i != self.n-1 and self.get_piece(i+1, j, board_state) == "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1,j)))
-            if i != self.n-1 and j != self.n-1 and self.get_piece(i+1, j+1, self.str_state) != "e":
+            if i != self.n-1 and j != self.n-1 and self.get_piece(i+1, j+1, board_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j+1)))
-            if i != self.n-1 and j != 0 and self.get_piece(i+1, j-1, self.str_state) != "e":
+            if i != self.n-1 and j != 0 and self.get_piece(i+1, j-1, board_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j-1)))
 
         non_suicidal_possible_moves = []

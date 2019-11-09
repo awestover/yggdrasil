@@ -28,4 +28,8 @@ def computer_action(state):
 
 if __name__ == "__main__":
     play_computer()
+    b = Board()
+    print(b)
+    print(b.get_best_action("black"))
+
 
