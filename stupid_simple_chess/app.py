@@ -15,7 +15,7 @@ def handleSendMove():
     board.update(request.form["move"])
     computer_action = board.humanify(board.get_best_action("black"))
     board.update(computer_action)
-    return json.dumps({"board": board.str_state, "move": computer_action, "move_ij": board.idx_to_ij(board.human_move_to_idxs(computer_action)[1])})
+    return json.dumps({"board": board.state, "move": computer_action, "move_ij": board.idx_to_ij(board.human_move_to_idxs(computer_action)[1])})
 
 if __name__ == "__main__":
     app.run(debug=True)

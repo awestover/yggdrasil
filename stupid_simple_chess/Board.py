@@ -3,10 +3,8 @@
 # black is caps
 # white is lower
 
-
 class Board:
-    def __init__(self, init_state="NeKeNPPPPPeeeeepppppneken"):
-    # def __init__(self, init_state="ePeeeepee"):
+    def __init__(self, init_state="NeKeNPPPPPeeeeepppppneken"): # def __init__(self, init_state="ePeeeepee"):
         self.n = int(len(init_state)**0.5)
         self.state = init_state
 
@@ -85,39 +83,46 @@ class Board:
     # returns [(start_idx, end_idx)]
     def possible_actions(self, board_state, color):
         all_possible_moves = []
-        for i in range(self.n):
-            for j in range(self.n):
-                if self.get_piece_color(self.get_piece(i, j, board_state)) == color:
-                    all_possible_moves += self.piece_possible_action(i, j, board_state)
+        if not self.is_dead(board_state, color):
+            for i in range(self.n):
+                for j in range(self.n):
+                    if self.get_piece_color(self.get_piece(i, j, board_state)) == color:
+                        all_possible_moves += self.piece_possible_action(i, j, board_state)
         return all_possible_moves
 
     # this is the top layer of recursion
     # returns action 
     def get_best_action(self, color, max_depth=4):
-        action, value = self.recursively_search_actions(self.state, color, max_depth)
+        action, value, path = self.recursively_search_actions(self.state, color, max_depth)
+        print(path)
         return action
 
     # this is the recursive call, it returns action, value
     def recursively_search_actions(self, board_state, color, depth_left):
         best_value = float("-inf") 
         best_action = (0,0)
+        best_move_path = []
         for action in self.possible_actions(board_state, color):
             tmp_board_state = self.test_perform_move(board_state, action)
             if depth_left == 0:
                 action_value = self.board_score(tmp_board_state, color)
-                #print(action_value)
+                move_path = []
             else:
-                opponent_action, opponent_action_value = self.recursively_search_actions(tmp_board_state, self.invert_color(color), depth_left-1)
+                opponent_action, opponent_action_value, move_path = self.recursively_search_actions(tmp_board_state, self.invert_color(color), depth_left-1)
                 action_value = -opponent_action_value
+                #  if depth_left == 4 and action == (0,11):
+                #      print(self.to_unicode(tmp_board_state))
+                #      print(action, opponent_action, action_value, move_path)
+                #      print("-"*30)
+                #      __import__('ipdb').set_trace()
 
             if action_value > best_value:
                 best_value = action_value
                 best_action = action
+                best_move_path = move_path
 
-        #print((5-depth_left)* "**" + "  " + str(best_value))
-        if best_value == float("-inf"):
-            __import__('ipdb').set_trace()
-        return best_action, best_value
+        #  print((5-depth_left)* "**" + "  " + str(best_value))
+        return best_action, best_value, [best_action] + best_move_path
 
     def ij_to_idx(self, i, j):
         return i*self.n+j
@@ -127,6 +132,12 @@ class Board:
 
     def get_piece(self, i, j, board_state):
         return board_state[self.ij_to_idx(i, j)]
+
+    def is_dead(self, board_state, color):
+        if color == "white":
+            return "k" not in board_state
+        elif color == "black":
+            return "K" not in board_state
 
     # returns [(start_idx, end_idx), ...]
     def piece_possible_action(self, i, j, board_state):

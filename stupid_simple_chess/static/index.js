@@ -1,5 +1,5 @@
 
-let board = "NKeNePPPPPeeeeepppppnekne";
+let board = "NeKeNPPPPPeeeeepppppneken";
 let n = parseInt(Math.sqrt(board.length));
 let piece_size = 100;
 
