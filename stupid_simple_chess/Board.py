@@ -3,8 +3,10 @@
 # black is caps
 # white is lower
 
+ct = 0
+
 class Board:
-    def __init__(self, init_state="NeKeNPPPPPeeeeepppppneken"): # def __init__(self, init_state="ePeeeepee"):
+    def __init__(self, init_state="NeKeNPPPPPeeeeepppppneken"):
         self.n = int(len(init_state)**0.5)
         self.state = init_state
 
@@ -92,13 +94,22 @@ class Board:
 
     # this is the top layer of recursion
     # returns action 
-    def get_best_action(self, color, max_depth=4):
-        action, value, path = self.recursively_search_actions(self.state, color, max_depth)
+    def get_best_action(self, color, max_depth=6):
+        action, value, path = self.recursively_search_actions(self.state, color, max_depth, 
+                {"black": -float("inf"), "white":-float("inf")})
         print(path)
+        global ct
+        print(ct)
+        ct = 0
         return action
 
     # this is the recursive call, it returns action, value
-    def recursively_search_actions(self, board_state, color, depth_left):
+    # i.e. this is minimax!!
+    # now featuring alpha, beta pruning!!
+    def recursively_search_actions(self, board_state, color, depth_left, best_prev_values):
+        #  print(board_state, color, depth_left, best_prev_values)
+        global ct
+        ct += 1
         best_value = float("-inf") 
         best_action = (0,0)
         best_move_path = []
@@ -108,20 +119,21 @@ class Board:
                 action_value = self.board_score(tmp_board_state, color)
                 move_path = []
             else:
-                opponent_action, opponent_action_value, move_path = self.recursively_search_actions(tmp_board_state, self.invert_color(color), depth_left-1)
+                opponent_action, opponent_action_value, move_path = self.recursively_search_actions(tmp_board_state, 
+                        self.invert_color(color), depth_left-1, 
+                        {"white": best_prev_values["white"], "black": best_prev_values["black"]}) # yes we need to copy this dict, or it will get modified in-place!!
                 action_value = -opponent_action_value
-                #  if depth_left == 4 and action == (0,11):
-                #      print(self.to_unicode(tmp_board_state))
-                #      print(action, opponent_action, action_value, move_path)
-                #      print("-"*30)
-                #      __import__('ipdb').set_trace()
 
             if action_value > best_value:
                 best_value = action_value
                 best_action = action
                 best_move_path = move_path
 
-        #  print((5-depth_left)* "**" + "  " + str(best_value))
+            best_prev_values[color] = max(best_prev_values[color], action_value)
+            if best_prev_values[color] >= -best_prev_values[self.invert_color(color)]:
+                break
+
+        #  print(best_action, best_value)
         return best_action, best_value, [best_action] + best_move_path
 
     def ij_to_idx(self, i, j):

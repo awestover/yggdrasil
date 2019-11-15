@@ -3,23 +3,19 @@ let board = "NeKeNPPPPPeeeeepppppneken";
 let n = parseInt(Math.sqrt(board.length));
 let piece_size = 100;
 
-let imgs = {
-	"K": new Image(),
-	"k": new Image(),
-	"P": new Image(),
-	"p": new Image(),
-	"N": new Image(),
-	"n": new Image(),
-	"e": new Image()
-}
-imgs["K"].src = 'static/blackking.jpg';
-imgs["k"].src = 'static/whiteking.png';
-imgs["P"].src = 'static/blackpawn.jpg';
-imgs["p"].src = 'static/whitepawn.png';
-imgs["N"].src = 'static/blackhorse.jpg';
-imgs["n"].src = 'static/whitehorse.jpeg';
-imgs["e"].src = 'static/empty.bmp';
+let img_side = 132
+// "piece": [i, j] in grid
+let imgs = { 
+	"N": [1, 1],
+	"n": [0, 1],
+	"K": [1, 4],
+	"k": [0, 4],
+	"P": [1, 5],
+	"p": [0, 5]
+};
 
+let pieces_sprite_sheet = new Image();
+pieces_sprite_sheet.src = "static/chessPieces.png";
 
 function sendMove(){
 	updateMoveLog("player", $("#move").val());
@@ -41,7 +37,12 @@ function updateBoard(highlight_squares){
 	for (let i = 0; i < n; i++){
 		for (let j = 0; j < n; j++){
 			let idx = n*i+j;
-			ctx.drawImage(imgs[board[idx]], j*piece_size, i*piece_size, piece_size, piece_size);
+			if(board[idx] != "e"){
+
+				let si = imgs[board[idx]][0];
+				let sj = imgs[board[idx]][1];
+				ctx.drawImage(pieces_sprite_sheet, sj*img_side, si*img_side, img_side, img_side, j*piece_size, i*piece_size, piece_size, piece_size);
+			}
 		}
 	}
 
