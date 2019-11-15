@@ -33,6 +33,7 @@ function sendMove(){
 function updateBoard(highlight_squares){
 	let c = document.getElementById("myCanvas");
 	let ctx = c.getContext("2d");
+	ctx.clearRect(0, 0, c.width, c.height);
 
 	for (let i = 0; i < n; i++){
 		for (let j = 0; j < n; j++){
