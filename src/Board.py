@@ -94,7 +94,7 @@ class Board:
 
     # this is the top layer of recursion
     # returns action 
-    def get_best_action(self, color, max_depth=6):
+    def get_best_action(self, color, max_depth=4):
         action, value, path = self.recursively_search_actions(self.state, color, max_depth, 
                 {"black": -float("inf"), "white":-float("inf")})
         print(path)

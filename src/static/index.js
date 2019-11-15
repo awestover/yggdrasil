@@ -1,7 +1,8 @@
 
-let board = "NeKeNPPPPPeeeeepppppneken";
+// let board = "NeKeNPPPPPeeeeepppppneken";
+let board = "NeeeKeeNPPPPPPPPeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeppppppppneekeeen"
 let n = parseInt(Math.sqrt(board.length));
-let piece_size = 100;
+let piece_size = 62.5;
 
 let img_side = 132
 // "piece": [i, j] in grid
@@ -18,14 +19,18 @@ let pieces_sprite_sheet = new Image();
 pieces_sprite_sheet.src = "static/chessPieces.png";
 
 function sendMove(){
-	updateMoveLog("player", $("#move").val());
-	$.post('/sendMove', {"board": board, "move": $("#move").val()}, 
+	$.post("/doPlayerMove", {"board": board, "move": $("#move").val()}, 
 		function(data){
 			let rdata = JSON.parse(data);
 			board = rdata["board"];
 			updateBoard([rdata["move_ij"]]);
-			updateMoveLog("computer", rdata["move"]);
-			console.log(rdata["move_ij"]);
+			updateMoveLog("player", $("#move").val());
+			$.post("/doComputerMove", {"board": board}, function(c_data){
+				let c_rdata = JSON.parse(c_data);
+				board = c_rdata["board"];
+				updateBoard([c_rdata["move_ij"]]);
+				updateMoveLog("computer", c_rdata["move"]);
+			});
 		}
 	);
 }

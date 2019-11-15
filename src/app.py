@@ -9,10 +9,16 @@ app = Flask(__name__)
 def index():
     return render_template("index.html") 
 
-@app.route("/sendMove", methods=("POST",))
-def handleSendMove():
+@app.route("/doPlayerMove", methods=("POST",))
+def doPlayerMove():
     board = Board(request.form["board"])
-    board.update(request.form["move"])
+    human_action = request.form["move"]
+    board.update(human_action)
+    return json.dumps({"board": board.state, "move_ij": board.idx_to_ij(board.human_move_to_idxs(human_action)[1])})
+
+@app.route("/doComputerMove", methods=("POST",))
+def doComputerMove():
+    board = Board(request.form["board"])
     computer_action = board.humanify(board.get_best_action("black"))
     board.update(computer_action)
     return json.dumps({"board": board.state, "move": computer_action, "move_ij": board.idx_to_ij(board.human_move_to_idxs(computer_action)[1])})
