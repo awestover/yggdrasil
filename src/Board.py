@@ -6,7 +6,7 @@
 ct = 0
 
 class Board:
-    def __init__(self, init_state="NeKeNPPPPPeeeeepppppneken"):
+    def __init__(self, init_state="NeKeNPPPPPeeeeeppbppneken"):
         self.n = int(len(init_state)**0.5)
         self.state = init_state
 
@@ -18,6 +18,7 @@ class Board:
             "k": "♔", "K": "♚", 
             "n": "♘", "N": "♞", 
             "p": "♙", "P": "♟", 
+            "b": "♗", "B": "♝",
             "e": " "
         }
         unicode_str = board_state
@@ -188,6 +189,20 @@ class Board:
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j+1)))
             if i != self.n-1 and j != 0 and self.get_piece(i+1, j-1, board_state) != "e":
                 possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+1, j-1)))
+
+        elif piece.lower == "b":
+            for c in range(self.n):
+                if 0 <= i-c < self.n:
+                    if 0 <= j-c < self.n:
+                        possible_moves.append((self.ij_to_idx(i,j), self.ij_to_idx(i-c, j-c)))
+                    if 0 <= j+c < self.n:
+                        possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i-c, j+c)))
+                if 0 <= i+c < self.n:
+                    if 0 <= j-c < self.n:
+                        possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+c, j-c)))
+                    if 0 <= j+c < self.n:
+                        possible_moves.append((self.ij_to_idx(i, j), self.ij_to_idx(i+c, j+c)))
+
 
         non_suicidal_possible_moves = []
         for move in possible_moves:

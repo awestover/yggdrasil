@@ -1,6 +1,6 @@
 
-// let board = "NeKeNPPPPPeeeeepppppneken";
-let board = "NeeeKeeNPPPPPPPPeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeppppppppneekeeen"
+let board = "bbBB";
+//let board = "NeBbKeeNPPPPPPPPeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeppppppppneekeeen"
 let n = parseInt(Math.sqrt(board.length));
 let piece_size = 62.5;
 
@@ -11,6 +11,8 @@ let imgs = {
 	"n": [0, 1],
 	"K": [1, 4],
 	"k": [0, 4],
+	"B": [1, 2],
+	"b": [0, 2],
 	"P": [1, 5],
 	"p": [0, 5]
 };
